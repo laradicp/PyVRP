@@ -631,7 +631,8 @@ PYBIND11_MODULE(_pyvrp, m)
                  std::stringstream stream;
                  stream << route;
                  return stream.str();
-             });
+             })
+        .def("centroidDistanceCost", &Route::centroidDistanceCost);
 
     py::class_<Solution>(m, "Solution", DOC(pyvrp, Solution))
         // Since Route implements __len__ and __getitem__, it is convertible to

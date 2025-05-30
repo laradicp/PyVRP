@@ -254,7 +254,8 @@ bool CostEvaluator::deltaCost(Cost &out, T<Args...> const &proposal) const
 {
     auto const *route = proposal.route();
 
-    out -= route->distanceCost();
+    // out -= route->distanceCost();
+    out -= route->centroidDistanceCost();
     out -= distPenalty(route->distance(), route->maxDistance());
 
     if constexpr (!skipLoad)
@@ -264,7 +265,10 @@ bool CostEvaluator::deltaCost(Cost &out, T<Args...> const &proposal) const
     out -= twPenalty(route->timeWarp());
 
     auto const dist = proposal.distanceSegment();
-    out += route->unitDistanceCost() * static_cast<Cost>(dist.distance());
+    // out += route->unitDistanceCost() * static_cast<Cost>(dist.distance());
+    out += proposal.unitDistanceCost() *          // keep multiplier
+            static_cast<Cost>(                    // but use
+                proposal.centroidDistance());     // the centroid distance
     out += distPenalty(dist.distance(), route->maxDistance());
 
     if constexpr (!exact)

@@ -77,6 +77,8 @@ private:
     Duration startTime_ = 0;        // (earliest) start time of this route
     Duration slack_ = 0;            // Total time slack on this route
     Cost prizes_ = 0;               // Total value of prizes on this route
+    Distance centroidDistance_{};   // raw Euclidean sum-to‐centroid
+    Cost centroidDistanceCost_{};   // multiplied by vehicle.unitDistanceCost
 
     std::pair<double, double> centroid_;  // Route center
     VehicleType vehicleType_;             // Type of vehicle
@@ -256,6 +258,14 @@ public:
      * constraints.
      */
     [[nodiscard]] bool hasTimeWarp() const;
+
+    /**
+     * Total cost of the average distance to the route's centroid.
+     */
+    [[nodiscard]] inline Cost centroidDistanceCost() const
+    {
+        return centroidDistanceCost_;
+    }
 
     bool operator==(Route const &other) const;
 

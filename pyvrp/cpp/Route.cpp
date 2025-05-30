@@ -125,6 +125,31 @@ Route::Route(ProblemData const &data, Visits visits, size_t const vehicleType)
         now += clientData.serviceDuration;
         prevClient = client;
     }
+
+    if (!visits_.empty())
+    {
+        double cx = 0, cy = 0;
+        for (auto client : visits_)
+        {
+            auto const &loc = data.location(client);
+            cx += loc.x;
+            cy += loc.y;
+        }
+        cx /= visits_.size();
+        cy /= visits_.size();
+
+        double sum = 0;
+        for (auto client : visits_)
+        {
+            auto const &loc = data.location(client);
+            sum += std::hypot(loc.x - cx, loc.y - cy);
+        }
+        double avg_centroid_distance = sum / visits_.size();
+
+        centroidDistance_      = static_cast<Distance>(avg_centroid_distance);
+        centroidDistanceCost_  = vehType.unitDistanceCost *
+                                static_cast<Cost>(centroidDistance_);
+    }
 }
 
 Route::Route(Visits visits,
