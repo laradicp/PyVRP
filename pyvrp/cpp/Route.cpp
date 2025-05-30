@@ -131,9 +131,9 @@ Route::Route(ProblemData const &data, Visits visits, size_t const vehicleType)
         double cx = 0, cy = 0;
         for (auto client : visits_)
         {
-            auto const &loc = data.location(client);
-            cx += loc.x;
-            cy += loc.y;
+            ProblemData::Client const &loc = data.location(client);
+            cx += static_cast<double>(loc.x);
+            cy += static_cast<double>(loc.y);
         }
         cx /= visits_.size();
         cy /= visits_.size();
