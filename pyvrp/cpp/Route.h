@@ -267,6 +267,14 @@ public:
         return centroidDistanceCost_;
     }
 
+    /**
+     * Total distance to the route's centroid.
+     */
+    [[nodiscard]] inline Distance centroidDistance() const
+    {
+        return centroidDistance_;
+    }
+
     bool operator==(Route const &other) const;
 
     Route() = delete;
