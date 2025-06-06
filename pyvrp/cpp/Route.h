@@ -275,6 +275,10 @@ public:
         return centroidDistance_;
     }
 
+    /**
+     * Returns whether this route is equal to another route. Two routes are equal
+     * if they have the same visits, vehicle type, and all other attributes match.
+     */
     bool operator==(Route const &other) const;
 
     Route() = delete;

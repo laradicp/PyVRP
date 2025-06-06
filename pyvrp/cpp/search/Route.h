@@ -438,6 +438,26 @@ public:
 
     Route(ProblemData const &data, size_t idx, size_t vehicleType);
     ~Route();
+
+    Distance centroidDistance() const
+    {
+        assert(!dirty);
+        auto const [cx, cy] = centroid();
+        double sum = 0;
+        for (auto client : visits)
+        {
+            auto const &clientData = static_cast<ProblemData::Client const &>(data.location(client));
+            sum += std::hypot(static_cast<double>(clientData.x) - cx,
+                              static_cast<double>(clientData.y) - cy);
+        }
+        return static_cast<Distance>(sum / visits.size());
+    }
+
+    Cost centroidDistanceCost() const
+    {
+        assert(!dirty);
+        return unitDistanceCost() * static_cast<Cost>(centroidDistance());
+    }
 };
 
 /**

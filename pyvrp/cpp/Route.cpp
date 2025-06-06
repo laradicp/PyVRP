@@ -141,14 +141,14 @@ Route::Route(ProblemData const &data, Visits visits, size_t const vehicleType)
         double sum = 0;
         for (auto client : visits_)
         {
-            auto const &loc = data.location(client);
-            sum += std::hypot(loc.x - cx, loc.y - cy);
+            auto const &clientData = static_cast<ProblemData::Client const &>(data.location(client));
+            sum += std::hypot(static_cast<double>(clientData.x) - cx,
+                              static_cast<double>(clientData.y) - cy);
         }
         double avg_centroid_distance = sum / visits_.size();
 
-        centroidDistance_      = static_cast<Distance>(avg_centroid_distance);
-        centroidDistanceCost_  = vehType.unitDistanceCost *
-                                static_cast<Cost>(centroidDistance_);
+        centroidDistance_ = static_cast<Distance>(avg_centroid_distance);
+        centroidDistanceCost_ = vehType.unitDistanceCost * static_cast<Cost>(centroidDistance_);
     }
 }
 

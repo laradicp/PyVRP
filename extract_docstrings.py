@@ -1,5 +1,6 @@
 import argparse
 import pathlib
+import re
 
 import docblock
 
@@ -44,6 +45,7 @@ _SUFFIX = """
 _OP2DUNDER = {
     "operator[]": "__getitem__",
     "operator()": "__call__",
+    "operator==": "__eq__",
 }
 
 
@@ -85,13 +87,30 @@ def to_cpp_stmt(name: str, docstrings: list[str]) -> str:
         for ctr, doc in enumerate(docstrings, 1)
     )
 
+def extract_inline_docs(code: str) -> dict[str, list[str]]:
+    """Extract documentation from inline functions."""
+    result = {}
+    pattern = r'/\*\*\s*\n(.*?)\*/\s*\[\[nodiscard\]\]\s*inline\s+\w+\s+(\w+)\s*\([^)]*\)\s*const\s*\{'
+    matches = re.finditer(pattern, code, re.DOTALL)
+    
+    for match in matches:
+        doc = match.group(1).strip()
+        func_name = match.group(2)
+        # Add the namespace and class name
+        result[f"pyvrp::Route::{func_name}"] = [doc]
+    
+    return result
+
 
 def main():
     args = parse_args()
 
     parsed = {}
     for header in args.input_locs:
+        with open(header, "r") as fh:
+            code = fh.read()
         parsed.update(docblock.parse_file(header))
+        parsed.update(extract_inline_docs(code))
 
     docs = "\n".join(map(lambda item: to_cpp_stmt(*item), parsed.items()))
 
