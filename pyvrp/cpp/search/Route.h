@@ -67,9 +67,14 @@ public:
     template <Segment... Segments> class Proposal
     {
         std::tuple<Segments...> segments_;
+        Distance internalDistance_;
+        size_t numClients_;
 
     public:
         Proposal(Segments &&...segments);
+
+        Distance internalDistance() const;
+        size_t numClients() const;
 
         /**
          * The proposal's route. This is the route associated with the first
@@ -944,6 +949,72 @@ Distance Route::Proposal<Segments...>::distance() const
     };
 
     return std::apply(fn, segments_);
+}
+
+template <Segment... Segments>
+Distance Route::Proposal<Segments...>::internalDistance() const
+{
+    auto const totalDist = this->distance();
+
+    auto const &firstSeg = std::get<0>(segments_);
+    auto const *route = firstSeg.route();
+    auto const &visits = route->visits;
+    auto const &matrix = route->data.distanceMatrix(route->profile());
+
+    size_t firstClientLoc;
+    if (firstSeg.size() > 1)
+    {
+        auto const startIdx
+            = std::find(visits.begin(), visits.end(), firstSeg.first())
+              - visits.begin();
+        firstClientLoc = visits[startIdx + 1];
+    }
+    else
+    {
+        if constexpr (sizeof...(Segments) > 1)
+        {
+            firstClientLoc = std::get<1>(segments_).first();
+        }
+        else  // single segment with size 1 (just depot), so no clients
+        {
+            return 0;
+        }
+    }
+
+    auto const &lastSeg = std::get<sizeof...(Segments) - 1>(segments_);
+    size_t lastClientLoc;
+
+    if (lastSeg.size() > 1)
+    {
+        auto const endIdx
+            = std::find(visits.begin(), visits.end(), lastSeg.last())
+              - visits.begin();
+        lastClientLoc = visits[endIdx - 1];
+    }
+    else
+    {
+        if constexpr (sizeof...(Segments) > 1)
+        {
+            lastClientLoc = std::get<sizeof...(Segments) - 2>(segments_).last();
+        }
+        else  // single segment with size 1 (just depot), so no clients
+        {
+            return 0;
+        }
+    }
+
+    auto const firstLeg = matrix(route->startDepot(), firstClientLoc);
+    auto const lastLeg = matrix(lastClientLoc, route->endDepot());
+
+    return std::max<Distance>(totalDist - firstLeg - lastLeg, 0);
+}
+
+template <Segment... Segments>
+size_t Route::Proposal<Segments...>::numClients() const
+{
+    return std::apply([](auto &&...segs) {
+        return (segs.size() + ... + 0);
+    }, segments_);
 }
 
 template <Segment... Segments>

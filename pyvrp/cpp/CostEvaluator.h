@@ -90,7 +90,7 @@ public:
     CostEvaluator(std::vector<double> loadPenalties,
                   double twPenalty,
                   double distPenalty,
-                  double distDevPenalty = 0);
+                  double distDevPenalty = 1);
 
     /**
      * Computes the total excess load penalty for the given load and vehicle
@@ -287,7 +287,7 @@ bool CostEvaluator::deltaCost(Cost &out, T<Args...> const &proposal) const
     out += route->unitDistanceCost() * static_cast<Cost>(distance);
     out += distPenalty(distance, route->maxDistance());
 
-    out += distDevPenalty(proposal.route()->internalDistance(), route->avgSegmentDistance(), proposal.route()->numClients());
+    out += distDevPenalty(proposal.internalDistance(), route->avgSegmentDistance(), proposal.numClients());
 
     if constexpr (!exact)
         if (out >= 0)
@@ -348,13 +348,13 @@ bool CostEvaluator::deltaCost(Cost &out,
     out += uRoute->unitDistanceCost() * static_cast<Cost>(uDist);
     out += distPenalty(uDist, uRoute->maxDistance());
 
-    out += distDevPenalty(uProposal.route()->internalDistance(), uRoute->avgSegmentDistance(), uProposal.route()->numClients());
+    out += distDevPenalty(uProposal.internalDistance(), uRoute->avgSegmentDistance(), uProposal.numClients());
 
     auto const vDist = vProposal.distance();
     out += vRoute->unitDistanceCost() * static_cast<Cost>(vDist);
     out += distPenalty(vDist, vRoute->maxDistance());
 
-    out += distDevPenalty(vProposal.route()->internalDistance(), vRoute->avgSegmentDistance(), vProposal.route()->numClients());
+    out += distDevPenalty(vProposal.internalDistance(), vRoute->avgSegmentDistance(), vProposal.numClients());
 
     if constexpr (!exact)
         if (out >= 0)
