@@ -458,6 +458,12 @@ PYBIND11_MODULE(_pyvrp, m)
         .def("set_dist_dev_penalty",
              &ProblemData::setDistDevPenalty,
              py::arg("dist_dev_penalty"))
+        .def("const_distance_penalty",
+             &ProblemData::constDistancePenalty,
+             DOC(pyvrp, ProblemData, constDistancePenalty))
+        .def("set_const_distance_penalty",
+             &ProblemData::setConstDistancePenalty,
+             py::arg("const_distance_penalty"))
         .def("centroid",
              &ProblemData::centroid,
              py::return_value_policy::reference_internal,
@@ -872,6 +878,9 @@ PYBIND11_MODULE(_pyvrp, m)
         .def("distance_cost",
              &Solution::distanceCost,
              DOC(pyvrp, Solution, distanceCost))
+        .def("const_distance_penalty",
+             &Solution::constDistancePenalty,
+             DOC(pyvrp, Solution, constDistancePenalty))
         .def("duration", &Solution::duration, DOC(pyvrp, Solution, duration))
         .def("duration_cost",
              &Solution::durationCost,
@@ -969,6 +978,7 @@ PYBIND11_MODULE(_pyvrp, m)
              &CostEvaluator::distPenalty,
              py::arg("distance"),
              py::arg("max_distance"),
+             py::arg("const_distance_penalty"),
              DOC(pyvrp, CostEvaluator, distPenalty))
         .def("dist_dev_penalty",
              &CostEvaluator::distDevPenalty,

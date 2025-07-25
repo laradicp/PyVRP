@@ -465,6 +465,16 @@ void ProblemData::setDistDevPenalty(double distDevPenalty)
     distDevPenalty_ = distDevPenalty;
 }
 
+double ProblemData::constDistancePenalty() const
+{
+    return constDistancePenalty_;
+}
+
+void ProblemData::setConstDistancePenalty(double constDistancePenalty)
+{
+    constDistancePenalty_ = constDistancePenalty;
+}
+
 ProblemData::ClientGroup const &ProblemData::group(size_t group) const
 {
     assert(group < groups_.size());

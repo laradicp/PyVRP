@@ -546,6 +546,7 @@ private:
     std::vector<ClientGroup> const groups_;        // Client groups
     Distance avgSegmentDistance_;                  // Average segment distance between two clients
     double distDevPenalty_;                         // Distance deviation penalty for the model
+    double constDistancePenalty_;                  // Constant distance penalty for the model
 
     size_t const numVehicles_;
     size_t const numLoadDimensions_;
@@ -687,6 +688,16 @@ public:
      * Sets the distance deviation penalty for the model.
      */
     void setDistDevPenalty(double distDevPenalty);
+
+    /**
+     * Constant distance penalty for the model.
+     */
+    [[nodiscard]] double constDistancePenalty() const;
+
+    /**
+     * Sets the constant distance penalty for the model.
+     */
+    void setConstDistancePenalty(double constDistancePenalty);
 
     /**
      * Number of clients in this problem instance.
